@@ -3,11 +3,29 @@ C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 S_SOURCES = $(shell find . -name "*.S")
 S_OBJECTS = $(patsubst %.S, %.o, $(S_SOURCES))
 
-CC = gcc
-LD = ld
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+CROSS_PREFIX ?= i386-elf-
+endif
+
+CROSS_PREFIX ?=
+
+CC = $(CROSS_PREFIX)gcc
+LD = $(CROSS_PREFIX)ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector
+CC_AVAILABLE := $(shell command -v $(CC) >/dev/null 2>&1 && echo yes)
+LD_AVAILABLE := $(shell command -v $(LD) >/dev/null 2>&1 && echo yes)
+
+ifeq ($(CC_AVAILABLE),)
+$(error $(CC) not found. Install a suitable cross-toolchain (e.g. `brew install i386-elf-binutils i386-elf-gcc` and leave CROSS_PREFIX empty or set CROSS_PREFIX=<prefix> when invoking make))
+endif
+
+ifeq ($(LD_AVAILABLE),)
+$(error $(LD) not found. Install a suitable cross-toolchain (e.g. `brew install i386-elf-binutils i386-elf-gcc`) or provide CROSS_PREFIX)
+endif
+
+C_FLAGS = -std=gnu11 -c -Wall -m32 -ggdb -nostdinc -fno-builtin -fno-stack-protector
 LD_FLAGS = -T tools/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 

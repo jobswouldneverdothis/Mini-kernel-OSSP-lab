@@ -2,7 +2,7 @@
 #include "debug.h"
 #include "vmm.h"
 
-// 物理内存页面管理栈
+
 static uint32_t pmm_stack[PAGE_MAX_SIZE + 1];
 static uint32_t pmm_stack_top;
 
@@ -10,14 +10,14 @@ uint32_t phy_page_count;
 
 void init_pmm()
 {
-    // GRUB 提供的内存分布信息
+
     uint32_t mmap_addr = glb_mboot_ptr->mmap_addr;
     uint32_t mmap_length = glb_mboot_ptr->mmap_length;
 
     uint32_t phy_kern_end = (uint32_t)kern_end - PAGE_OFFSET;
     for (mmap_entry_t *mmap = (mmap_entry_t *)mmap_addr;
             (uint32_t)mmap < mmap_addr + mmap_length; ++mmap) {
-        // 如果是有效物理内存
+
         if (mmap->type == 1) {
             uint32_t begin = mmap->base_addr_low < (uint32_t)phy_kern_end ? (uint32_t)phy_kern_end : mmap->base_addr_low;
             uint32_t end = mmap->base_addr_low + mmap->length_low;
@@ -25,7 +25,7 @@ void init_pmm()
             begin = ROUNDUP(begin, PMM_PAGE_SIZE);
             end   = ROUNDDOWN(end, PMM_PAGE_SIZE);
 
-            // 检查是否和内核空间重叠
+
             if (end < (uint32_t)phy_kern_end) {
                 continue;
             }
@@ -53,7 +53,7 @@ void pmm_free_page(uint32_t p)
 
 void show_memory_map()
 {
-    // GRUB 提供的内存信息
+
     uint32_t mmap_addr = glb_mboot_ptr->mmap_addr;
     uint32_t mmap_length = glb_mboot_ptr->mmap_length;
 

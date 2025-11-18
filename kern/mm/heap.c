@@ -17,21 +17,21 @@
 #include "vmm.h"
 #include "pmm.h"
 
-// 申请内存块
+
 static void alloc_chunk(uint32_t start, uint32_t len);
 
-// 释放内存块
+
 static void free_chunk(header_t *chunk);
 
-// 切分内存块
+
 static void split_chunk(header_t *chunk, uint32_t len);
 
-// 合并内存块
+
 static void glue_chunk(header_t *chunk);
 
 static uint32_t heap_max = HEAP_START;
 
-// 内存块管理头指针
+
 static header_t *heap_first;
 
 void init_heap()
@@ -41,15 +41,15 @@ void init_heap()
 
 void *kmalloc(uint32_t len)
 {
-    // 加上头大小
+
     len += sizeof(header_t);
 
     header_t *cur_header = heap_first;
     header_t *prev_header = 0;
 
-    // 遍历 heap 链表
+
     while (cur_header) {
-        // 如果大小合适
+
         if (cur_header->allocated == 0 && cur_header->length >= len) {
             split_chunk(cur_header, len);
             cur_header->allocated = 1;
@@ -60,17 +60,17 @@ void *kmalloc(uint32_t len)
         cur_header = cur_header->next;
     }
 
-    // 没找到合适的内存块
+
     uint32_t chunk_start;
     if (prev_header) {
          chunk_start = (uint32_t)prev_header + prev_header->length;
-    // 第一次分配
+
     } else {
          chunk_start = HEAP_START;
          heap_first = (header_t *) chunk_start;
     }
 
-    // 扩展堆内存区域
+
     alloc_chunk(chunk_start, len);
 
     cur_header = (header_t *)chunk_start;
@@ -89,17 +89,17 @@ void kfree(void *p)
     header_t *header = (header_t *)((uint32_t)p - sizeof(header_t));
     header->allocated = 0;
 
-    // 粘合内存
+
     glue_chunk(header);
 }
 
-// 扩展堆内存
+
 void alloc_chunk(uint32_t start, uint32_t len)
 {
-    // 循环申请页面
+
     while (start + len > heap_max) {
         uint32_t page = pmm_alloc_page();
-        // 修改页表
+
         map(pgd_kern, heap_max, page, PAGE_PRESENT | PAGE_WRITE);
         heap_max += PAGE_SIZE;
     }
@@ -107,14 +107,14 @@ void alloc_chunk(uint32_t start, uint32_t len)
 
 void free_chunk(header_t *chunk)
 {
-    // 修改指针
+
     if (chunk->prev == 0) {
          heap_first = 0;
     } else {
         chunk->prev->next = 0;
     }
 
-    // 空闲的内存超过 1 页就释放掉
+
     while ((heap_max - PAGE_SIZE) > (uint32_t)chunk) {
         heap_max -= PAGE_SIZE;
 
@@ -127,17 +127,17 @@ void free_chunk(header_t *chunk)
 
 void split_chunk(header_t *chunk, uint32_t len)
 {
-    // 剩余空间要能存下一个 header
+
     if (chunk->length - len > sizeof(header_t)) {
         header_t *new_chunk = (header_t *)((uint32_t)chunk + len);
 
-        // 新 chunk 插入 heap 链表
+
         new_chunk->prev = chunk;
         new_chunk->next = chunk->next;
         if (chunk->next) chunk->next->prev = new_chunk;
         chunk->next = new_chunk;
 
-        // 长度修改
+
         new_chunk->allocated = 0;
         new_chunk->length = chunk->length - len;
         chunk->length = len;
@@ -146,7 +146,7 @@ void split_chunk(header_t *chunk, uint32_t len)
 
 void glue_chunk(header_t *chunk)
 {
-    // 合并后面的
+
     if (chunk->next && chunk->next->allocated == 0) {
         chunk->length += chunk->next->length;
 
@@ -154,7 +154,7 @@ void glue_chunk(header_t *chunk)
         if(chunk->next) chunk->next->prev = chunk;
     }
 
-    // 合并前面的
+
     if (chunk->prev && chunk->prev->allocated == 0) {
         chunk->prev->length += chunk->length;
 
@@ -163,7 +163,7 @@ void glue_chunk(header_t *chunk)
         chunk = chunk->prev;
     }
 
-    // 如果后面没有内存块了直接释放
+
     if (chunk->next == 0) {
          free_chunk(chunk);
     }

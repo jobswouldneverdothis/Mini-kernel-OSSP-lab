@@ -13,7 +13,6 @@ SECTIONS
         *(.init.data)
         . = ALIGN(4096);
     }
-    /* 内核虚拟地址偏移 0xC0000000 */
     . += 0xC0000000;
     .text : AT(ADDR(.text) - 0xC0000000)
     {

@@ -1,11 +1,70 @@
-# 忽略所有 .o 结尾的文件
+# Build outputs
 *.o
+*.bin
+*.elf
+*.img
+*.iso
 
-# 忽略内核文件
+# Kernel binary
 kernel
+kernel.bin
 
-# 忽略 tags
-tags
+# Bootloader outputs
+boot/*.bin
+boot/*.img
 
-# 系统产生的文件
+# Assembly intermediates
+*.lst
+*.map
+
+# Linker outputs
+*.ld.out
+
+# Debug files
+*.sym
+*.debug
+
+# Editor and IDE files
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+*.sublime-*
 .DS_Store
+
+# GDB history
+.gdb_history
+
+# QEMU files
+qemu.log
+serial.log
+
+# Mount points
+/mnt/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Dependencies
+*.d
+.depend
+
+# Compressed archives
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# Core dumps
+core
+core.*
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
