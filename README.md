@@ -1,39 +1,104 @@
-# os-9527
+# MiniOS - Educational Operating System Kernel
 
-Mini Operating System Kernel
+A lightweight operating system kernel implementation designed for learning OS concepts and low-level system programming.
 
-## Modules 
--  BootLoader 
--  VGA Driver
--  Interrupt Handlers
--  Keyboard Driver 
--  Physical Memory Management 
--  Virtual Memory Management
--  Kernel Process 
--  Process Scheduling
+## Features
 
-## Requirements
-- Linux
-- GCC
-- NASM
-- QEMU
+### Core Components
+- **Boot Loader**: Custom bootloader for system initialization
+- **VGA Driver**: Text-mode display driver for console output
+- **Interrupt Handling**: IDT setup and interrupt service routines
+- **Keyboard Driver**: PS/2 keyboard input handling
+- **Memory Management**:
+  - Physical memory allocator
+  - Virtual memory with paging support
+- **Process Management**:
+  - Kernel-level process abstraction
+  - Context switching
 
-## Build 
+### Process Scheduling Algorithms
+- **FCFS (First-Come, First-Served)**: Simple queue-based scheduling
+- **Round Robin**: Time-sliced fair scheduling with configurable quantum
+
+## System Requirements
+
+- **OS**: Linux (Ubuntu/Debian recommended)
+- **Compiler**: GCC (GNU Compiler Collection)
+- **Assembler**: NASM (Netwide Assembler)
+- **Emulator**: QEMU x86 emulator
+- **Debugger** (optional): GDB
+
+## Installation
+
+Install dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install build-essential nasm gdb qemu-system-x86
 ```
-sudo apt-get install build-essential nasm gdb qemu
-sudo ln -s /usr/bin/qemu-system-i386 /usr/bin/qemu
-sudo mkdir /mnt/floppy
+
+Create mount point for floppy operations:
+```bash
+sudo mkdir -p /mnt/floppy
+```
+
+## Building
+
+Compile the kernel:
+```bash
 make
 ```
 
-## Usage
+Clean build artifacts:
+```bash
+make clean
 ```
+
+## Running
+
+Launch in QEMU emulator:
+```bash
 make qemu
 ```
 
-## Screenshot
-![](https://github.com/hijkzzz/os-9527/blob/master/test.jpg?raw=true)
+For debugging with GDB:
+```bash
+make qemu-gdb
+# In another terminal:
+gdb
+```
 
-## References
-- JamesM's kernel development tutorials
-- uCore OS
+## Project Structure
+
+```
+.
+├── boot/          # Bootloader code
+├── kernel/        # Kernel core implementation
+├── drivers/       # Device drivers (VGA, keyboard)
+├── mm/            # Memory management
+├── proc/          # Process and scheduling
+├── include/       # Header files
+└── Makefile       # Build configuration
+```
+
+## Technical Details
+
+- **Architecture**: x86 (32-bit)
+- **Boot Protocol**: Multiboot-compatible
+- **Memory Model**: Higher-half kernel
+- **Scheduling Quantum**: 10ms (configurable)
+
+## Learning Resources
+
+This project incorporates concepts from various OS development tutorials and academic resources in operating systems design.
+
+## License
+
+Educational use only. See LICENSE file for details.
+
+## Contributing
+
+This is an educational project. Suggestions and improvements are welcome through issues and pull requests.
+
+## Acknowledgments
+
+Built using standard OS development practices and inspired by various educational OS projects in the open-source community.
