@@ -17,24 +17,27 @@ int32_t kernel_thread(int (*fn)(void *), void *arg)
 
     bzero(new_proc, sizeof(proc_struct_t));
 
-    // 内核线程共享内核页表
     new_proc->cr3   = (uint32_t)pgd_kern - PAGE_OFFSET;
     new_proc->state = TASK_RUNNABLE;
     new_proc->pid   = now_pid++;
     set_proc_name(new_proc, "");
     new_proc->kstack = (uint32_t)new_proc + STACK_SIZE;
+    
+    new_proc->priority = 5;
+    new_proc->time_quantum = 10;
+    new_proc->runtime = 0;
+    new_proc->wait_time = 0;
+    new_proc->arrival_time = now_pid;
+    new_proc->burst_time = 20;
 
-    // 填写函数调用栈
     uint32_t *stack_top = (uint32_t *)((uint32_t)new_proc + STACK_SIZE);
     *(--stack_top) = (uint32_t)arg;
     *(--stack_top) = (uint32_t)kthread_exit;
     *(--stack_top) = (uint32_t)fn;
 
     new_proc->context.esp = (uint32_t)new_proc + STACK_SIZE - 3 * sizeof(uint32_t);
-    // 开中断
     new_proc->context.eflags = 0x200;
 
-    // 插入调度链表
     new_proc->next = running_proc_head;
     new_proc->prev = running_proc_head->prev;
     running_proc_head->prev->next = new_proc;
@@ -45,7 +48,6 @@ int32_t kernel_thread(int (*fn)(void *), void *arg)
 
 void kthread_exit()
 {
-    // 暂时没有释放内存
     register uint32_t val asm("eax");
     printk("Thread exited with value %d", val);
 }

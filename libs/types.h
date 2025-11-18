@@ -21,7 +21,6 @@ typedef          char  bool;
 typedef uint32_t       size_t;
 typedef uint32_t       pid_t;
 
-// 向下取整
 #define ROUNDDOWN(a, n) ({                                          \
             size_t __a = (size_t)(a);                               \
             (typeof(a))(__a - __a % (n));                           \

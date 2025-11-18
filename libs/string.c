@@ -23,7 +23,6 @@ inline void bzero(void *dest, uint32_t len)
 
 inline int strcmp(const char *str1, const char *str2)
 {
-    //找到第一个不相同的字符
     while (*str1 != '\0' && *str1 == *str2) {
         ++str1;
         ++str2;

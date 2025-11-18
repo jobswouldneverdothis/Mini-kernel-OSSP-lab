@@ -6,7 +6,7 @@ static elf_t kernel_elf;
 
 void init_debug()
 {
-    // 获取 ELF 信息
+
     kernel_elf = elf_from_multiboot(glb_mboot_ptr);
 }
 
@@ -21,7 +21,7 @@ void print_cur_status()
             "mov %%ss, %3;"
             : "=m"(reg1), "=m"(reg2), "=m"(reg3), "=m"(reg4));
 
-    // 打印当前的运行级别
+
     printk("%d: @ring %d\n", round, reg1 & 0x3);
     printk("%d:  cs = %x\n", round, reg1);
     printk("%d:  ds = %x\n", round, reg2);
@@ -36,7 +36,7 @@ void panic(const char *msg)
     print_stack_trace();
     printk("***\n");
 
-    // 致命错误发生后打印栈信息后停止在这里
+
     while(1);
 }
 
@@ -45,10 +45,10 @@ void print_stack_trace()
     uint32_t *ebp, *eip;
 
     asm volatile ("mov %%ebp, %0" : "=r" (ebp));
-    // ebp 的初始值为 0
+
     while (ebp) {
         eip = ebp + 1;
-        // 打印函数名
+
         printk("   [0x%x] %s\n", *eip, elf_lookup_symbol(*eip, &kernel_elf));
         ebp = (uint32_t*)*ebp;
     }

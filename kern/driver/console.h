@@ -2,7 +2,6 @@
 #define INCLUDE_CONSOLE_H
 
 #include "types.h"
-// 颜色定义
 typedef
 enum real_color{
     rc_black = 0,
@@ -23,16 +22,12 @@ enum real_color{
     rc_white = 15
 } real_color_t;
 
-// 输出清空
 void console_clear();
 
-// 输出字符
 void console_putc_color(char c, real_color_t back, real_color_t fore);
 
-// 输出字符串
 void console_write(char *cstr);
 
-// 输出带颜色的字符串
 void console_write_color(char *cstr, real_color_t back, real_color_t fore);
 
 #endif // INCLUDE_CONSOLE_H
